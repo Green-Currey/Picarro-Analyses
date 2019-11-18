@@ -93,10 +93,10 @@ for (i in seq(nrow(df))) {
   
   
   # flux calculations
-  N2O.flux = N2O.slope * (V / (A * R * (273.15 + df$Temp[i]))) * 3600
-  CO2.flux = CO2.slope * (V / (A * R * (273.15 + df$Temp[i]))) * 3600 * 0.001
-  CH4.flux = CH4.slope * (V / (A * R * (273.15 + df$Temp[i]))) * 3600
-  NH3.flux = NH3.slope * (V / (A * R * (273.15 + df$Temp[i]))) * 3600
+  N2O.flux = N2O.slope * (V / (A * R * (273.15 + df$Temp[i]))) * 3600 * 24
+  CO2.flux = CO2.slope * (V / (A * R * (273.15 + df$Temp[i]))) * 3600 * 24 * 0.001
+  CH4.flux = CH4.slope * (V / (A * R * (273.15 + df$Temp[i]))) * 3600 * 24
+  NH3.flux = NH3.slope * (V / (A * R * (273.15 + df$Temp[i]))) * 3600 * 24
   
   # appending the data frame
   df$Flux_N2O[i] <- N2O.flux
