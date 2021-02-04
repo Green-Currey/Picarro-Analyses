@@ -42,7 +42,7 @@ V <- A*h * 1000 # volume (liters)
 R <- .08314 # gas constant (LK mol-1) 
 
 
-
+paste(test)
 # Plotting by sampling day and time ------------------------------------------------
 
 # Enter Year
