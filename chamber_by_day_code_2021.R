@@ -31,6 +31,9 @@ months <- c('January',
             'November',
             'December')
 
+# p-value threshold
+alpha <- 0.05
+
 # Dimensions of chamber ---------------------------------------------------
 
 d <- 0.2032 # diameter (m)
@@ -128,14 +131,25 @@ for (i in seq(nrow(df))) {
            Plot_Tx = paste0(rep(Plot),'. ', Tx),
            On = rep(new.time.on))
   
+  
+  data$N2O_p <- if_else(summary(lm(N2O_dry ~ time2, data = data))$coefficients[2,4] < alpha, 1, 0) %>% as.factor()
+  data$CO2_p <- if_else(summary(lm(CO2 ~ time2, data = data))$coefficients[2,4] < alpha, 1, 0) %>% as.factor()
+  data$CH4_p <- if_else(summary(lm(CH4 ~ time2, data = data))$coefficients[2,4] < alpha, 1, 0) %>% as.factor()
+  data$NH3_p <- if_else(summary(lm(NH3 ~ time2, data = data))$coefficients[2,4] < alpha, 1, 0) %>% as.factor()
+  
   if (i == 1) {to.plot <- data} else {to.plot <- to.plot %>% rbind(data)}
+  
+  
 }
+
+
+
 
 cols <- c('grey47', 'darkolivegreen3', 'darkorange')
 
 N2O <- ggplot(data = to.plot) +
   aes(x = time2, y = N2O_dry, group = Treatment, color = Treatment) +
-  geom_point() + geom_smooth() +
+  geom_point() + geom_smooth(aes(linetype = N2O_p), method = 'lm', color = 'black') +
   facet_grid(.~Plot_Tx, scales = 'free') +
   scale_color_manual(values = cols) +
   theme_bw(base_size = 20) +
@@ -148,7 +162,7 @@ N2O <- ggplot(data = to.plot) +
 
 CO2 <- ggplot(data = to.plot) +
   aes(x = time2, y = CO2, group = Treatment, color = Treatment) +
-  geom_point() + geom_smooth() +
+  geom_point() + geom_smooth(aes(linetype = CO2_p), method = 'lm', color = 'black') +
   facet_grid(.~Plot_Tx, scales = 'free') +
   scale_color_manual(values = cols) +
   theme_bw(base_size = 20) +
@@ -161,7 +175,7 @@ CO2 <- ggplot(data = to.plot) +
 
 CH3 <- ggplot(data = to.plot) +
   aes(x = time2, y = CH4, group = Treatment, color = Treatment) +
-  geom_point() + geom_smooth() +
+  geom_point() + geom_smooth(aes(linetype = CH4_p), method = 'lm', color = 'black') +
   facet_grid(.~Plot_Tx, scales = 'free') +
   scale_color_manual(values = cols) +
   theme_bw(base_size = 20) +
@@ -174,7 +188,7 @@ CH3 <- ggplot(data = to.plot) +
 
 NH3 <- ggplot(data = to.plot) +
   aes(x = time2, y = NH3, group = Treatment, color = Treatment) +
-  geom_point() + geom_smooth() +
+  geom_point() + geom_smooth(aes(linetype = NH3_p), method = 'lm', color = 'black') +
   facet_grid(.~Plot_Tx, scales = 'free') +
   scale_color_manual(values = cols) +
   theme_bw(base_size = 20) +
