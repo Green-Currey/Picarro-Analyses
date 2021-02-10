@@ -30,6 +30,8 @@ months <- c('January',
             'November',
             'December')
 
+alpha <- 0.05
+
 # Dimensions of chamber ---------------------------------------------------
 
 d <- 0.2032 # diameter (m)
@@ -126,6 +128,12 @@ for (i in seq(nrow(df))) {
     mutate(time2 = seq(n()))
   
   
+  # Significance filter
+  N2O_p <- if_else(summary(lm(N2O_dry ~ time2, data = data))$coefficients[2,4] < alpha, 1, 0)
+  CO2_p <- if_else(summary(lm(CO2 ~ time2, data = data))$coefficients[2,4] < alpha, 1, 0)
+  CH4_p <- if_else(summary(lm(CH4_dry ~ time2, data = data))$coefficients[2,4] < alpha, 1, 0)
+  NH3_p <- if_else(summary(lm(NH3 ~ time2, data = data))$coefficients[2,4] < alpha, 1, 0)
+  
   
   # obtaining the slope coefficints from linear models between time and flux
   N2O.slope <- coefficients(lm(N2O_dry ~ time2, data))[2] %>% as.numeric
@@ -141,22 +149,22 @@ for (i in seq(nrow(df))) {
   NH3.flux = NH3.slope * (V / (A * R * (273.15 + df$Temp[i]))) * 3600
   #####* 24 is to get to mmol per m^2 per day (not hour)
   
-  # appending the data frame
-  df$Flux_N2O[i] <- N2O.flux
-  df$Mean_N2O[i] <- mean(data$N2O_dry, na.rm = T)
-  df$SD_N2O[i] <- sd(data$N2O_dry, na.rm = T)
+  # appending the data frame. If P-value > alpha, Flux = NA
+  df$Flux_N2O[i] <- ifelse(N2O_p==1, N2O.flux, NA)
+  df$Mean_N2O[i] <- ifelse(N2O_p==1, mean(data$N2O_dry, na.rm = T), NA)
+  df$SD_N2O[i] <- ifelse(N2O_p==1, sd(data$N2O_dry, na.rm = T), NA)
   
-  df$Flux_CO2[i] <- CO2.flux
-  df$Mean_CO2[i] <- mean(data$CO2, na.rm = T)
-  df$SD_CO2[i] <- sd(data$CO2, na.rm = T)
+  df$Flux_CO2[i] <- ifelse(CO2_p==1, CO2.flux, NA)
+  df$Mean_CO2[i] <- ifelse(CO2_p==1, mean(data$CO2, na.rm = T), NA)
+  df$SD_CO2[i] <- ifelse(CO2_p==1, sd(data$CO2, na.rm = T), NA)
   
-  df$Flux_CH4[i] <- CH4.flux
-  df$Mean_CH4[i] <- mean(data$CH4_dry, na.rm = T)
-  df$SD_CH4[i] <- sd(data$CH4_dry, na.rm = T)
+  df$Flux_CH4[i] <- ifelse(CO2_p==1, CH4.flux, NA)
+  df$Mean_CH4[i] <- ifelse(CO2_p==1, mean(data$CH4_dry, na.rm = T), NA)
+  df$SD_CH4[i] <- ifelse(CO2_p==1, sd(data$CH4_dry, na.rm = T), NA)
   
-  df$Flux_NH3[i] <- NH3.flux
-  df$Mean_NH3[i] <- mean(data$NH3, na.rm = T)
-  df$SD_NH3[i] <- sd(data$NH3, na.rm = T)
+  df$Flux_NH3[i] <- ifelse(CO2_p==1, NH3.flux, NA)
+  df$Mean_NH3[i] <- ifelse(CO2_p==1, mean(data$NH3, na.rm = T), NA)
+  df$SD_NH3[i] <- ifelse(CO2_p==1, sd(data$NH3, na.rm = T), NA)
 }
 
 # rewrite data
