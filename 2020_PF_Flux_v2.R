@@ -30,7 +30,7 @@ months <- c('January',
             'November',
             'December')
 
-alpha <- 0.05
+alpha <- 1 #Changed to 1 as filter by significant slope isnt necessary. Will update this to filter by an r^2 of 0.90 03-04-22 JG
 
 # Dimensions of chamber ---------------------------------------------------
 
